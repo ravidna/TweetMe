@@ -25,7 +25,7 @@ In config.js file change credentials accordingly:
 
 You now have the ability to make GET and POST requests against the API via the convenience methods.
 
-browse to localhost:8081 first, check the post a tweet option while listening to server.
+browse to localhost:8081 first, check the post a tweet option.
 
 ## Contributors
 
