@@ -1,0 +1,60 @@
+<html>
+<head>
+	<title>TweetMe</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+	<link rel='stylesheet prefetch' href='https://codepen.io/justinklemm/pen/zAdoJ.css'>
+	<link rel="stylesheet" type="text/css" href="mystyle.css">
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" id="bootstrap-css">
+
+</head>
+<body>
+<div>
+	<div>
+		<nav class="navbar navbar-inverse" role="navigation" style="padding-left:130px;">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="/">Home<span class="sr-only">(current)</span></a></li>
+			</ul>
+		</nav>
+	</div>
+
+</div>
+<div class="text-center">
+	<img src="logo.png" class="rounded" alt="..." height="350" width="350">
+</div>
+
+<div class="container">
+	<div class="row">
+		<div class="span4 well" style="padding-bottom:0">
+			<form accept-charset="UTF-8" action="" method="POST">
+                <textarea class="span4" id="tweetMessage" name="new_message"
+						  placeholder="What's happening?" rows="5"></textarea>
+				<button class="btn btn-info" type="submit" id="tweet">Tweet</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+</body>
+<script>
+
+	document.getElementById("tweet").addEventListener("click", function()
+	{
+		let tweet = document.getElementById("tweetMessage").value;
+		let json = JSON.stringify({"tweetMessage": tweet});
+		var xhr = new XMLHttpRequest();
+		var url = 'http://localhost:8081';
+		if (tweet === '') {
+			alert("You must write something!");
+			return;
+		}
+		else {
+			xhr.open("POST", url, true); // true = asynchronous
+			xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+			//alert(tweetMessage);
+			xhr.send(json);
+		}
+	});
+
+</script>
+</html>
