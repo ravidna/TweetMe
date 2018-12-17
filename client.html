@@ -43,7 +43,7 @@
 		let tweet = document.getElementById("tweetMessage").value;
 		let json = JSON.stringify({"tweetMessage": tweet});
 		var xhr = new XMLHttpRequest();
-		var url = 'http://localhost:8081';
+		var url = 'http://localhost:8081/posttweet';
 		if (tweet === '') {
 			alert("You must write something!");
 			return;

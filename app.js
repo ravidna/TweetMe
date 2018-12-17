@@ -15,16 +15,20 @@ app.use(bodyParser.json());
 
 
 app.get('/',function(req,res){
-    res.sendfile("client.html");
+    res.sendFile(path.join(__dirname, 'client.html'));
 });
 
 
 app.get('/logo.png',function(req,res){
-    res.sendfile("logo.png");
+    res.sendFile(path.join(__dirname, 'logo.png'));
+});
+
+app.post('/',function(req,res){
+    res.sendFile(path.join(__dirname, 'client.html'));
 });
 
 // Post a tweet
-app.post("/", function (req, res) {
+app.post("/posttweet", function (req, res) {
     if(req.body) {
         let tweet = (req.body.tweetMessage); // Get the user's tweets value from client
         let params = {
