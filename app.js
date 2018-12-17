@@ -1,15 +1,15 @@
 let express = require("express");
-let app = express();
 let bodyParser= require ("body-parser");
+let app = express();
 let path = require("path");
 
 let Twitter = require('twitter');
 let config = require('./config.js');
-let T = new Twitter(config);
+let twitter = new Twitter(config);
 let username = "NaouriRavid";
 
 
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.urlencoded({extended:false}));
 
 app.use(bodyParser.json());
 
@@ -26,15 +26,15 @@ app.get('/logo.png',function(req,res){
 // Post a tweet
 app.post("/", function (req, res) {
     if(req.body) {
-        let tweet = (req.body.tweetMessage); //get the user's tweets value from client
+        let tweet = (req.body.tweetMessage); // Get the user's tweets value from client
         let params = {
             status: tweet
         }
-        T.post('statuses/update', params, function(err, data, res) {
+        twitter.post('statuses/update', params, function(err, data, res) {
             if(!err){
-                var username1 = data.user.screen_name;
-                var tweetId = data.id_str;
-                console.log('your tweet have been posted! you can find it here:', `https://twitter.com/${username1}/status/${tweetId}`);
+                let username = data.user.screen_name;
+                let tweetId = data.id_str;
+                console.log('your tweet have been posted! you can find it here:', `https://twitter.com/${username}/status/${tweetId}`);
             } else {
                 console.log(err);
             }
@@ -48,14 +48,13 @@ app.post("/", function (req, res) {
 
 
 // Retweet a tweet
-
 app.post("/retweet", function (req, res) {
     if(req.body) {
         let id = (req.body.tweetID); //get the user's tweet id value from client
-        let params2 = { //params can be added - according to client API using twitter API parameters
+        let params = { //params can be added - according to client API using twitter API parameters
             id: id //instead of id
         }
-        T.post('statuses/retweet/', params2, function(err, data, res) { //retweet
+        twitter.post('statuses/retweet/', params, function(err, data, res) { //retweet
             if(!err){
                 var username1 = data.user.screen_name;
                 var tweetId = data.id_str;
@@ -72,28 +71,26 @@ app.post("/retweet", function (req, res) {
 });
 
 
-// Follow the author's tweets that have been come up in search
-
+// Search tweets and follow the authors
 app.post("/friendship", function (req, res) {
     if(req.body) {
         let q = (req.body.q);
         let count = (req.body.count);
         let result_type = (req.body.result_type);
         let lang = (request.body.lang);
-        let params3 = {
+        let params = {
             q: q, //Search query
             count: count, // Number of tweets
             result_type: 'recent', //User's choice between mixed,recent,popular results
             lang: 'en' //Language
         }
-        T.get('search/tweets', params3, function(err, data, response) {
-            // If there is no error, proceed
+        twitter.get('search/tweets', params, function(err, data, response) {
             if(!err){
                 // Loop through the returned tweets
                 for(let i = 0; i < data.statuses.length; i++) {
                     let screen_name = data.statuses[i].user.screen_name;
                     // create friendship with the tweet's author
-                    T.post('friendships/create', {screen_name}, function (err, res) {
+                    twitter.post('friendships/create', {screen_name}, function (err, res) {
                         if (err) {
                             console.log(err);
                         } else { // success, log the names of the users the user now follow
@@ -114,19 +111,18 @@ app.post("/friendship", function (req, res) {
 
 
 // Get and print list of favourite tweets
-
 app.post("/favourite", function (req, res) {
     if(req.body) {
         let count = (req.body.count);
         let since_id = (req.body.since_id);
-        let params4 = {
+        let params = {
             count: count, // Number of tweets
-            since_id: 'recent' // Results with an ID greater than this ID
+            since_id: since_id // Results with an ID greater than this ID
         }
         // Get and print list of favourite tweets
-        T.get('favorites/list', params4, function(err, data, res) {
+        twitter.get('favorites/list', params, function(err, data, res) {
             if(err) throw err;
-            console.log(data);  // successfully log The favorites.
+            console.log(data);  // Successfully log The favorites.
         });
         res.status(200).send();
     }
@@ -137,17 +133,16 @@ app.post("/favourite", function (req, res) {
 
 
 // Stream statuses filtered by keyword, number of tweets per second depend on topic popularity
-
 app.post("/stream", function (req, res) {
     if(req.body) {
         let track = (req.body.count);
         let location = (req.body.since_id);
-        let params5 = { //params can be added - according to client API using twitter API parameters choices
+        let params = { // params can be added - according to client API using twitter API parameters choices
             track: track, // Keyword to track
             locations: location // Specifies a set of bounding boxes to track
         }
         // Get and print list of favourite tweets
-        T.stream('statuses/filter', params5,  function(stream) {
+        twitter.stream('statuses/filter', params,  function(stream) {
             stream.on('start', function(start) {
                 console.log("start");
             });
@@ -175,19 +170,17 @@ app.post("/image", function (req, res) {
         let path = (req.body.path); // Path to image
         let tweet = (req.body.tweet); // Tweet's value
         let data = require('fs').readFileSync(path);
-
         // Make post request on media endpoint. Pass file data as media parameter
-        T.post('media/upload', {media: data}, function(error, media, response) {
-
+        twitter.post('media/upload', {media: data}, function(error, media, response) {
             if (!error) {
                 // If successful, a media object will be returned.
                 console.log(media);
-                // tweet it
+                // Tweet it
                 let status = {
                     status: tweet,
                     media_ids: media.media_id_string // Pass the media id string
                 }
-                T.post('statuses/update', status, function(err, data, res) {
+                twitter.post('statuses/update', status, function(err, data, res) {
                     if (!err) {
                         var username1 = data.user.screen_name;
                         var tweetId = data.id_str;
@@ -219,7 +212,7 @@ app.post("/searchtweet", function (req, res) {
             result_type: 'recent', //User's choice between mixed,recent,popular results
             lang: 'en' //Language
         }
-        T.get('search/tweets', params, function(err, data, response) {
+        twitter.get('search/tweets', params, function(err, data, response) {
             // If there is no error, proceed
             if(!err){
                 // Loop through the returned tweets
@@ -227,7 +220,7 @@ app.post("/searchtweet", function (req, res) {
                     // Get the tweet Id from the returned data
                     let id = { id: data.statuses[i].id_str }
                     // Favorite the selected Tweet
-                    T.post('favorites/create', id, function(err, response){
+                    twitter.post('favorites/create', id, function(err, response){
                         // If the favorite fails, log the error message
                         if(err){
                             console.log(err[0].message);
@@ -253,29 +246,28 @@ app.post("/searchtweet", function (req, res) {
 
 
 // Retweets "count" number of user's tweets
-
 app.post("/retweetscount", function (req, res) {
     if(req.body) {
         let user_id = (req.body.user_id);
         let count = (req.body.count);
-        let params6 = {
+        let params = {
             count: count, // Number of tweets
             user_id: user_id
         }
-        //get a list of favourite tweets
-        T.get('statuses/user_timeline', params6, function(err, data, response) {
+        // Get a list of favourite tweets
+        twitter.get('statuses/user_timeline', params, function(err, data, response) {
             // If there is no error, proceed
             if(!err){
                 // Loop through the returned tweets
                 for(let i = 0; i < data.length; i++){
                     // Get the tweet Id from the returned data
                     let id = data[i].id_str;
-                    //console.log(id);
+                    // Console.log(id);
                     // Retweet the tweets
-                    T.post('statuses/retweet/'+id, function(err, data, response) {
+                    twitter.post('statuses/retweet/'+id, function(err, data, response) {
                         if(!err){
                             let tweetId = response.id_str;
-                            console.log('Retweeted: ', `https://twitter.com/${username}/status/${id}`) //Success, log the tweets
+                            console.log('Retweeted: ', `https://twitter.com/${username}/status/${id}`) // Success, log the tweets
                         } else {
                             console.log(err);
                         }
