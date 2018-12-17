@@ -22,6 +22,7 @@ In config.js file change credentials accordingly:
   access_token_key: TWITTER_ACCESS_TOKEN_KEY,
   access_token_secret: TWITTER_ACCESS_TOKEN_SECRET
 ```
+if you chose to use the values already inside, it will use a test account: RavidNaouri - @NaouriRavid 
 
 ## USING
 
