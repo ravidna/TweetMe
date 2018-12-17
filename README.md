@@ -4,11 +4,12 @@ An asynchronous service to integrate Twitter API
 
 ## Installation
 
-npm install 
+`npm install` 
 
 ## Quick Start
 
-Deploy Main Server: cd mainServer then node app.js.
+`cd mainServer`
+`node app.js`
 
 
 ## For User based authentication:
