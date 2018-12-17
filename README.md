@@ -4,7 +4,7 @@ An asynchronous service to integrate Twitter API
 
 ## Installation
 
-`npm install 
+npm install 
 
 ## Quick Start
 
